@@ -3,9 +3,9 @@
 
 class SecondhandApi
 {
-    public function outputAll (array $array) {
+    public function outputAll (string $unit, array $array) {
         $json = [
-            "student-count" => count($array),
+            "$unit-count" => count($array),
             "result" => $array
         ];
         header("Content-Type: application/json");

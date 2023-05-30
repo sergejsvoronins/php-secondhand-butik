@@ -16,22 +16,22 @@ class Seller {
         $this->creating_date = $creating_date;
     }
 
-    public function getId () : int {
-        return $this->id;
-    }
-    public function getFirstName (): string {
-        return $this->first_name;
-    }
-    public function getLastName (): string {
-        return $this->last_name;
-    }
-    public function getEpost () : string {
-        return $this->epost;
-    }
-    public function getMobile () : string {
-        return $this->mobile;
-    }
-    public function getCreatingDate () : string {
-        return $this->creating_date;
-    }
+    // public function getId () : int {
+    //     return $this->id;
+    // }
+    // public function getFirstName (): string {
+    //     return $this->first_name;
+    // }
+    // public function getLastName (): string {
+    //     return $this->last_name;
+    // }
+    // public function getEpost () : string {
+    //     return $this->epost;
+    // }
+    // public function getMobile () : string {
+    //     return $this->mobile;
+    // }
+    // public function getCreatingDate () : string {
+    //     return $this->creating_date;
+    // }
 }
