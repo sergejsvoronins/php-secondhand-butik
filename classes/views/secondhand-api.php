@@ -3,11 +3,14 @@
 
 class SecondhandApi
 {
-    public function outputAll (string $unit, array $array) {
-        $json = [
-            "$unit-count" => count($array),
-            "result" => $array
+    public function outputJson ($model, $method) {
+        // var_dump($model);
+        $json = [            
+            "count" => count($method),
+            "result" => $method
         ];
+
+
         header("Content-Type: application/json");
         echo json_encode($json);
     }

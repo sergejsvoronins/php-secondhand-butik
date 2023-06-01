@@ -1,18 +1,19 @@
 <?php
-// require "classes/models/category-model.php";
-// require "classes/models/size-model.php";
-// require "classes/models/product-model.php";
 require "classes/models/seller-model.php";
+require "classes/models/product-model.php";
 require "classes/views/secondhand-api.php";
-require "controllers/seller-controller.php";
+require "controllers/controller.php";
 
 $request = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
-
-// $productModel = new ProductModel();
-// $categoryModel = new CategoryModel();
-// $sizeModel = new SizeModel();
 $sellerModel = new SellerModel();
+$productModel = new ProductModel();
 $secondhandApi = new SecondhandApi();
-$sellerController = new Controller($sellerModel, $secondhandApi, "sellers");
-$sellerController->start($method,$request);
+$controler = new Controller($secondhandApi);
+$controler->addRoute("/sellers", $sellerModel, "getAllSellers");
+$controler->addRoute("/seller/", $sellerModel, "getOneSeller");
+$controler->addRoute("/products", $productModel, "getAllProducts");
+$controler->addRoute("/product", $productModel, "addProduct");
+
+$controler->start($method, $request);
+
