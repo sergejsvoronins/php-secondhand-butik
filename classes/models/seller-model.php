@@ -34,15 +34,11 @@ class SellerModel extends DB {
         $stmt->execute([$id]);
         return $this->convertToSellerClass($stmt->fetchAll()) ;   
         }
-    // public function addSeller ($fn, $ln, $epost, $mobile) : void {
-    //     $query = "INSERT INTO `sellers`(`first_name`, `last_name`, `epost`, `mobile`, `creating_date`) VALUES (?,?,?,?, CURRENT_DATE())";
-    //     $stmt = $this->pdo->prepare($query);
-    //     $stmt->execute([$fn, $ln, $epost, $mobile]);   
-    // }
-    public function addSeller (Seller $seller) : void {
+    public function addSeller (Seller $seller) : string {
         $query = "INSERT INTO `sellers`(`first_name`, `last_name`, `epost`, `mobile`, `creating_date`) VALUES (?,?,?,?, CURRENT_DATE())";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$seller->first_name, $seller->last_name, $seller->epost, $seller->mobile]);  
+        $stmt->execute([$seller->first_name, $seller->last_name, $seller->epost, $seller->mobile]);
+        return $this->pdo->lastInsertId();  
     }
     public function getProductsCountByUser (int $userId) {
         $query = "SELECT COUNT(s.id) AS products_count FROM sellers AS s

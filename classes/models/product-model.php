@@ -23,17 +23,12 @@ class ProductModel extends DB {
     public function getAllProducts () : array {
         return $this->convertToProductClass($this->getAll($this->table));
     }
-    public function addProduct (Product $product) :void {
+    public function addProduct (Product $product) : string {
         $query = "INSERT INTO `products`(`name`, `size_id`, `category_id`, `price`, `seller_id`, `creating_date`) 
                     VALUES (?,?,?,?,?,CURRENT_DATE());";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$product->name, $product->size_id, $product->category_id, $product->price, $product->seller_id]);
-        // if($stmt->fetchAll()) {
-        //     return $stmt->fetchAll();
-        // }   
-        // else {
-        //     echo "error";
-        // }
+        return $this->pdo->lastInsertId();
     }
     public function addSellingDate (int $productId) {
         $query ="UPDATE `products` SET `selling_date`= CURRENT_DATE() WHERE products.id = ?;";
