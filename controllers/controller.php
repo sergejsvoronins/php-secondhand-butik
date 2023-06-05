@@ -3,66 +3,75 @@
 class Controller {
     private $routes = [];
     private $view = null;
+    private $method = "";
 
-    public function __construct($view) {
+    public function __construct($view, $method) {
         $this->view = $view;
+        $this->method = $method;
     }
 
     public function addRoute($route, $model, $method) {
         $this->routes[$route] = ['model' => $model, 'method' => $method];
     }
 
-    public function start($method, $request) {
-        $url = parse_url($request, PHP_URL_PATH);
-        var_dump($url);
-        foreach ($this->routes as $route => $action) {
-            if ($method =="GET" && strpos($url, $route) === 8) {
-                $params = trim(substr($url, strlen($route)), '/');
-                $paramsArray = explode('/', $params);
-                // var_dump($paramsArray);
+    public function start($request) {
+        $parts = explode("/", $request);
+            $element = $parts[2];
+            foreach ($this->routes as $route => $action) {
+            if($this->method == "GET" && trim($route, "/") == $parts[2]) {
                 $model = $action['model'];
                 $method = $action['method'];
-
-                $this->handleGetRoute($model, $method, $paramsArray);
-                return;
+                $this->handleGetRoute($model, $method, $parts[3] );
             }
-            else if ($method =="POST" && strpos($url, $route) === 8){
-                $params = trim(substr($url, strlen($route)), '/');
-                $paramsArray = explode('/', $params);
-                // var_dump($paramsArray);
+            else if($this->method == "POST" && trim($route, "/") == $parts[2]) {
+                $model = $action['model'];
+                $method = $action['method']; 
+                $this->handlePostRoute($model, $method, $element);
+            }
+            else if($this->method == "PUT" && trim($route, "/") == $parts[2] . "/" . $parts[3]) {
                 $model = $action['model'];
                 $method = $action['method'];
-                $this->handlePostRoute($model, $method, $paramsArray);
-                return;
+                $this->handlePutRoute($model, $method, $parts[4]);
             }
         }
-
-        // If no route matches, return an error or appropriate response
-        $this->view->outputJson([]);
-        // $this->view->outputJson(['error', 'Route not found']);
+        
+        // $this->view->outputJson("error");
     }
-
-    private function handleGetRoute($model, $method, $paramsArray) {
-        if (count($paramsArray) === 1) {
-            $this->view->outputJson($model, $model->$method());
-        } else if (count($paramsArray) === 2) {
-            $this->view->outputJson($model, $model->$method((int)$paramsArray[1]));
+    
+    private function handleGetRoute($model, $method, ? int $id) {
+        if ( $id) {
+            $this->view->outputJson($model->$method($id));
         } else {
-            // If the route expects more than one parameter, you can handle it accordingly
-            // $this->view->outputJson('error', 'Invalid route');
-        }
+            $this->view->outputJson($model->$method());
+        } 
     }
-    private function handlePostRoute ($model, $method, $paramsArray){
+    private function handlePostRoute ($model, $method, $element){
         $requestData = $_POST;
-        if(count($paramsArray) === 1){
-            $product = new Product (
-                $requestData["name"],
-                $requestData["size_id"],
-                $requestData["category_id"],
-                $requestData["price"],
-                $requestData["seller_id"]
-            );
-            $model->$method($product);
+            if($element == "seller") {
+                $seller = new Seller (
+                    filter_var($requestData["first_name"],FILTER_SANITIZE_SPECIAL_CHARS),
+                    filter_var($requestData["last_name"],FILTER_SANITIZE_SPECIAL_CHARS),
+                    filter_var(filter_var($requestData["epost"],FILTER_SANITIZE_EMAIL),FILTER_VALIDATE_EMAIL),
+                    filter_var($requestData["mobile"],FILTER_SANITIZE_NUMBER_INT)
+                );
+                $model->$method($seller);
+                
+            }
+            else if($element == "product") {
+                $product = new Product (
+                    filter_var($requestData["name"],FILTER_SANITIZE_SPECIAL_CHARS),
+                    filter_var(filter_var($requestData["size_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT),
+                    filter_var(filter_var($requestData["category_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT),
+                    filter_var(filter_var($requestData["price"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT),
+                    filter_var(filter_var($requestData["seller_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT)
+                );
+                $model->$method($product);
+    
+            }
+    }
+    private function handlePutRoute ($model, $method, ? int $id){
+        if($id) {
+            $model->$method($id);
         }
     }
 }

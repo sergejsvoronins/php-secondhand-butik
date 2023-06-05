@@ -3,15 +3,20 @@
 
 class SecondhandApi
 {
-    public function outputJson ($model, $method) {
+    public function outputJson ($input) {
         // var_dump($model);
-        $json = [            
-            "count" => count($method),
-            "result" => $method
-        ];
-
-
-        header("Content-Type: application/json");
-        echo json_encode($json);
+        if($input== "error") {
+            echo "Route is not found";
+        }
+        else {
+            $json = [            
+                "count" => count($input),
+                "result" => $input
+            ];
+    
+    
+            header("Content-Type: application/json");
+            echo json_encode($json);
+        }
     }
 }

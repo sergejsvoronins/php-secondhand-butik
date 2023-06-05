@@ -27,7 +27,13 @@ class ProductModel extends DB {
         $query = "INSERT INTO `products`(`name`, `size_id`, `category_id`, `price`, `seller_id`, `creating_date`) 
                     VALUES (?,?,?,?,?,CURRENT_DATE());";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$product->name, $product->size_id, $product->category_id, $product->price, $product->seller_id]);  
+        $stmt->execute([$product->name, $product->size_id, $product->category_id, $product->price, $product->seller_id]);
+        // if($stmt->fetchAll()) {
+        //     return $stmt->fetchAll();
+        // }   
+        // else {
+        //     echo "error";
+        // }
     }
     public function addSellingDate (int $productId) {
         $query ="UPDATE `products` SET `selling_date`= CURRENT_DATE() WHERE products.id = ?;";

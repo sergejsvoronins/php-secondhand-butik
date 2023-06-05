@@ -22,14 +22,6 @@ class SellerModel extends DB {
         }
         return $sellers;
     }
-    public function getSellers ( $id) {
-        if($id == 0) {
-           return  $this->getAllSellers();
-        }
-        else {
-           return  $this->getOneSeller($id);
-        }
-    }
     public function getAllSellers () : array {
         $query = "SELECT * FROM $this->table ORDER BY $this->table.last_name ASC ";
         $stmt = $this->pdo->prepare($query);
@@ -50,7 +42,7 @@ class SellerModel extends DB {
     public function addSeller (Seller $seller) : void {
         $query = "INSERT INTO `sellers`(`first_name`, `last_name`, `epost`, `mobile`, `creating_date`) VALUES (?,?,?,?, CURRENT_DATE())";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$seller->first_name, $seller->last_name, $seller->epost, $seller->mobile]);   
+        $stmt->execute([$seller->first_name, $seller->last_name, $seller->epost, $seller->mobile]);  
     }
     public function getProductsCountByUser (int $userId) {
         $query = "SELECT COUNT(s.id) AS products_count FROM sellers AS s
