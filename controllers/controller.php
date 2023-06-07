@@ -17,7 +17,7 @@ class Controller {
     public function start($request):void {
         $parts = explode("/", $request);
             foreach ($this->routes as $route => $action) {
-            if($this->method == "GET" && trim($route, "/") == $parts[2]) {
+            if($this->method == "GET" && trim($route, "/") == $parts[2] && array_key_exists("update", $parts) === false) {
                 $id = $parts[3] ?? null;
                 $model = $action['model'];
                 $method = $action['method'];
@@ -36,31 +36,24 @@ class Controller {
             }
         }
         
-        // $this->view->outputJson("error");
         // http_response_code(404);
     }
     
-    private function handleGetRoute($model, $method, ? int $id) {
+    private function handleGetRoute($model, $method, ? string $id) {
         if ( $id) {
-            $this->view->outputJson($model->$method($id));
+            $this->view->outputJson($model->$method((int)$id));
         } else {
             $this->view->outputJson($model->$method());
         } 
     }
     private function handlePostRoute ($model, $method, $element){
-        $requestData = $_POST;
-        if(isset(
-            $_POST["first_name"],
-            $_POST["last_name"],
-            $_POST["epost"],
-            $_POST["mobile"],
-        ) || isset(
-            $_POST["name"],
-            $_POST["size_id"],
-            $_POST["category_id"],
-            $_POST["price"],
-            $_POST["seller_id"],
-        ))  {
+        $data = file_get_contents('php://input');
+        $requestData = json_decode($data, true);
+        $errors = $this->getValidationErrors($requestData);
+        if(count($errors)!=0){
+            var_dump($errors);
+        }
+        else {
             switch($element) {
                 case ("seller"):
                     $fname = filter_var($requestData["first_name"],FILTER_SANITIZE_SPECIAL_CHARS);
@@ -76,7 +69,7 @@ class Controller {
                     $category = filter_var(filter_var($requestData["category_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT);
                     $price = filter_var(filter_var($requestData["price"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT);
                     $seller = filter_var(filter_var($requestData["seller_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT);
-                    $product = new Product ($name, $size, $category, $price, $seller);
+                    $product = new Product ($name, (int) $size, (int) $category, (int) $price, (int) $seller);
                     $id = $model->$method($product);
                     break;
             }
@@ -85,11 +78,20 @@ class Controller {
                 "message" => "$element is created",
                 "id" => $id
             ]);
-        }      
+        } 
     }
     private function handlePutRoute ($model, $method, ? string $id){
         if($id) {
             $model->$method((int)$id);
         }
+    }
+    private function getValidationErrors(array $data) {
+        $errors = [];
+        foreach($data as $element) {
+            if(empty($element)) {
+                array_push($errors, "More data is required");
+            }
+        }
+        return $errors;
     }
 }
