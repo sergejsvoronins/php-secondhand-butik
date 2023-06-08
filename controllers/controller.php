@@ -10,38 +10,55 @@ class Controller {
         $this->method = $method;
     }
 
-    public function addRoute($route, $model, $method) {
-        $this->routes[$route] = ['model' => $model, 'method' => $method];
+    public function addRoute($route, $model, $method, $requestType) {
+        $data = [
+            [
+                'route' => $route,
+                'model' => $model,
+                'method' => $method,
+                'request_type' => $requestType
+            ]
+        ];
+        array_push($this->routes, $data);
     }
 
     public function start($request):void {
         $parts = explode("/", $request);
-            foreach ($this->routes as $route => $action) {
-            if($this->method == "GET" && trim($route, "/") == $parts[2] && array_key_exists("update", $parts) === false) {
-                $id = $parts[3] ?? null;
-                $model = $action['model'];
-                $method = $action['method'];
-                $this->handleGetRoute($model, $method, $id);
+        try {
+            foreach ($this->routes as $route) {
+                if($this->method == "GET" && trim($route[0]["route"], "/") == $parts[2] && $route[0]['request_type'] == "GET") {
+                    $id = $parts[3] ?? NULL;
+                    $model = $route[0]['model'];
+                    $method = $route[0]['method'];
+                    $this->handleGetRoute($model, $method, $id);
+                }
+                else if($this->method == "POST" && trim($route[0]['route'], "/") == $parts[2] && $route[0]['request_type'] == "POST") {
+                    $model = $route[0]['model'];
+                    $method = $route[0]['method']; 
+                    $this->handlePostRoute($model, $method, $parts[2]);
+                }
+                else if($this->method == "PUT" && trim($route[0]['route'], "/") == $parts[2] && $route[0]['request_type'] == "PUT") {
+                    $id = $parts[3] ?? null;
+                    $model = $route[0]['model'];
+                    $method = $route[0]['method'];
+                    $this->handlePutRoute($model, $method, $id);
+                }
             }
-            else if($this->method == "POST" && trim($route, "/") == $parts[2]) {
-                $model = $action['model'];
-                $method = $action['method']; 
-                $this->handlePostRoute($model, $method, $parts[2]);
-            }
-            else if($this->method == "PUT" && trim($route, "/") == $parts[2] . "/" . $parts[3]) {
-                $id = $parts[4] ?? null;
-                $model = $action['model'];
-                $method = $action['method'];
-                $this->handlePutRoute($model, $method, $id);
-            }
+        } catch ( Error $e) {
+            var_dump("$e");
         }
         
-        // http_response_code(404);
     }
     
     private function handleGetRoute($model, $method, ? string $id) {
-        if ( $id) {
-            $this->view->outputJson($model->$method((int)$id));
+        if ($id) {
+            $errors = $this->getValidationErrors(["id" => $id]);
+            if(! empty($errors)) {
+                $this->view->outputJsonValidationsError($errors);
+            }
+            else {
+                $this->view->outputJson($model->$method((int)$id));
+            }
         } else {
             $this->view->outputJson($model->$method());
         } 
@@ -49,49 +66,108 @@ class Controller {
     private function handlePostRoute ($model, $method, $element){
         $data = file_get_contents('php://input');
         $requestData = json_decode($data, true);
-        $errors = $this->getValidationErrors($requestData);
-        if(count($errors)!=0){
-            var_dump($errors);
-        }
-        else {
+        $id = null;
             switch($element) {
                 case ("seller"):
-                    $fname = filter_var($requestData["first_name"],FILTER_SANITIZE_SPECIAL_CHARS);
-                    $lname = filter_var($requestData["last_name"],FILTER_SANITIZE_SPECIAL_CHARS);
-                    $epost = filter_var(filter_var($requestData["epost"],FILTER_SANITIZE_EMAIL),FILTER_VALIDATE_EMAIL);
-                    $mobile = filter_var($requestData["mobile"],FILTER_SANITIZE_NUMBER_INT);
-                    $seller = new Seller ($fname, $lname, $epost, $mobile);
-                    $id = $model->$method($seller);
+                    $requestData["first_name"] = filter_var($requestData["first_name"],FILTER_SANITIZE_SPECIAL_CHARS);
+                    $requestData["last_name"] = filter_var($requestData["last_name"],FILTER_SANITIZE_SPECIAL_CHARS);
+                    $requestData["epost"] = filter_var($requestData["epost"],FILTER_SANITIZE_EMAIL);
+                    $requestData["mobile"] = filter_var($requestData["mobile"],FILTER_SANITIZE_NUMBER_INT);
+                    $errors = $this->getValidationErrors($requestData);
+                    if(! empty($errors)){
+                        $this->view->outputJsonValidationsError($errors);
+                    }
+                    else {
+                        $seller = new Seller (
+                            $requestData["first_name"], 
+                            $requestData["last_name"], 
+                            $requestData["epost"], 
+                            $requestData["mobile"]);
+                        $id = $model->$method($seller);
+                    }
                     break;
                 case ("product"):
-                    $name = filter_var($requestData["name"],FILTER_SANITIZE_SPECIAL_CHARS);
-                    $size = filter_var(filter_var($requestData["size_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT);
-                    $category = filter_var(filter_var($requestData["category_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT);
-                    $price = filter_var(filter_var($requestData["price"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT);
-                    $seller = filter_var(filter_var($requestData["seller_id"],FILTER_SANITIZE_NUMBER_INT),FILTER_VALIDATE_INT);
-                    $product = new Product ($name, (int) $size, (int) $category, (int) $price, (int) $seller);
-                    $id = $model->$method($product);
+                    $requestData["name"] = filter_var($requestData["name"],FILTER_SANITIZE_SPECIAL_CHARS);
+                    $requestData["size_id"] = filter_var($requestData["size_id"],FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["category_id"] = filter_var($requestData["category_id"],FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["price"] = filter_var($requestData["price"],FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["seller_id"] = filter_var($requestData["seller_id"],FILTER_SANITIZE_NUMBER_INT);
+                    $errors = $this->getValidationErrors($requestData);
+                    if(! empty($errors)){
+                        $this->view->outputJsonValidationsError($errors);
+                    }
+                    else {
+                        $product = new Product (
+                            $requestData["name"], 
+                            (int) $requestData["size_id"], 
+                            (int) $requestData["category_id"], 
+                            (int) $requestData["price"], 
+                            (int) $requestData["seller_id"]);
+                        $id = $model->$method($product);
+                    }
                     break;
-            }
+        }
+        if($id){
             http_response_code(201);
             echo json_encode([
                 "message" => "$element is created",
                 "id" => $id
             ]);
-        } 
+        }
+        
     }
     private function handlePutRoute ($model, $method, ? string $id){
         if($id) {
             $model->$method((int)$id);
         }
     }
-    private function getValidationErrors(array $data) {
+
+    private function sanitizeData ($data) {
+
+    }
+    private function getValidationErrors($data) : array {
         $errors = [];
-        foreach($data as $element) {
-            if(empty($element)) {
-                array_push($errors, "More data is required");
+        if(is_array($data) && ! empty($data)){
+            foreach($data as $element => $value) {
+                if(empty($value)) {
+                    $errors [] = $element . " is required";
+                }
             }
+            if(array_key_exists("id", $data)) {
+                if(filter_var($data["id"],FILTER_VALIDATE_INT)=== false) {
+                    $errors [] = "Id must be of type number";
+                }
+            }
+            if(array_key_exists("epost", $data)) {
+                if(filter_var($data["epost"],FILTER_VALIDATE_EMAIL)=== false) {
+                    $errors [] = "Epost must be type of epost";
+                }
+            }
+            if(array_key_exists("size_id", $data)) {
+                if(filter_var($data["size_id"],FILTER_VALIDATE_INT)=== false) {
+                    $errors [] = "Size must be type of integer";
+                }
+            }
+            if(array_key_exists("category_id", $data)) {
+                if(filter_var($data["category_id"],FILTER_VALIDATE_INT)=== false) {
+                    $errors [] = "Category must be type of integer";
+                }
+            }
+            if(array_key_exists("price", $data)) {
+                if(filter_var($data["price"],FILTER_VALIDATE_INT)=== false) {
+                    $errors [] = "Price must be type of integer";
+                }
+            }
+            if(array_key_exists("seller_id", $data)) {
+                if(filter_var($data["seller_id"],FILTER_VALIDATE_INT)=== false) {
+                    $errors [] = "Price must be type of integer";
+                }
+            }
+            return $errors;
         }
-        return $errors;
+        else {
+            http_response_code(404);
+            return $errors;
+        }
     }
 }

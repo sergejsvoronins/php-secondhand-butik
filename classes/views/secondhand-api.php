@@ -3,12 +3,24 @@
 
 class SecondhandApi
 {
-    public function outputJson ($input) {
-        $json = [            
-            "count" => count($input),
-            "result" => $input
-        ];
+    public function outputJson(array $data) {
         header("Content-Type: application/json");
-        echo json_encode($json);
+        if(count($data)==0){
+            http_response_code(404);
+        }
+        if(count($data)>1){
+            $json = [            
+                "count" => count($data),
+                "result" => $data
+            ];
+            echo json_encode($json);
+        }
+        else {
+            echo json_encode($data);
+        }
+    }
+    public function outputJsonValidationsError (array $errors) {
+        http_response_code(422);
+        echo json_encode(['errors' => $errors]);
     }
 }
