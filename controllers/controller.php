@@ -181,7 +181,7 @@ class Controller {
             return $errors;
         }
         else {
-            http_response_code(404);
+            http_response_code(422);
             return $errors;
         }
     }
