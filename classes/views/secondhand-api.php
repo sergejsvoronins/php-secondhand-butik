@@ -6,7 +6,7 @@ class SecondhandApi
     public function outputJson(array $data) {
         header("Content-Type: application/json");
         if(count($data)==0){
-            http_response_code(404);
+            http_response_code(400);
         }
         if(count($data)>1){
             $json = [            

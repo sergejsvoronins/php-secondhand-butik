@@ -118,13 +118,28 @@ class Controller {
     }
     private function handlePutRoute ($model, $method, ? string $id){
         if($id) {
-            $model->$method((int)$id);
+            $errors = $this->getValidationErrors(["id" => $id]);
+            if(! empty($errors)) {
+                $this->view->outputJsonValidationsError($errors);
+            }
+            else {
+            $isSold = $model->$method((int)$id);
+                if($isSold!=0){
+                echo json_encode([
+                    "message" => "Product  med ID = $id has been updated"
+                ]);
+                }
+                else {
+                echo json_encode([
+                    "message" => "Product  med ID = $id is already sold"
+                ]);
+                
+                }
+            }
         }
     }
 
-    private function sanitizeData ($data) {
 
-    }
     private function getValidationErrors($data) : array {
         $errors = [];
         if(is_array($data) && ! empty($data)){

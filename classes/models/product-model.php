@@ -31,8 +31,10 @@ class ProductModel extends DB {
         return $this->pdo->lastInsertId();
     }
     public function addSellingDate (int $productId) {
-        $query ="UPDATE `products` SET `selling_date`= CURRENT_DATE() WHERE products.id = ?;";
+        $query ="UPDATE products  SET selling_date= IF(selling_date IS NULL, CURRENT_DATE(), selling_date)
+        WHERE id = ?;";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$productId]);  
+        return $stmt->rowCount();
     }
 }
