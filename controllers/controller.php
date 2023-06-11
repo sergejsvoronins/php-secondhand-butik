@@ -24,30 +24,25 @@ class Controller {
 
     public function start($request):void {
         $parts = explode("/", $request);
-        try {
-            foreach ($this->routes as $route) {
-                if($this->method == "GET" && trim($route[0]["route"], "/") == $parts[2] && $route[0]['request_type'] == "GET") {
-                    $id = $parts[3] ?? NULL;
-                    $model = $route[0]['model'];
-                    $method = $route[0]['method'];
-                    $this->handleGetRoute($model, $method, $id);
-                }
-                else if($this->method == "POST" && trim($route[0]['route'], "/") == $parts[2] && $route[0]['request_type'] == "POST") {
-                    $model = $route[0]['model'];
-                    $method = $route[0]['method']; 
-                    $this->handlePostRoute($model, $method, $parts[2]);
-                }
-                else if($this->method == "PUT" && trim($route[0]['route'], "/") == $parts[2] && $route[0]['request_type'] == "PUT") {
-                    $id = $parts[3] ?? null;
-                    $model = $route[0]['model'];
-                    $method = $route[0]['method'];
-                    $this->handlePutRoute($model, $method, $id);
-                }
+        foreach ($this->routes as $route) {
+            if($this->method == "GET" && trim($route[0]["route"], "/") == $parts[2] && $route[0]['request_type'] == "GET") {
+                $id = $parts[3] ?? NULL;
+                $model = $route[0]['model'];
+                $method = $route[0]['method'];
+                $this->handleGetRoute($model, $method, $id);
             }
-        } catch ( Error $e) {
-            var_dump("$e");
+            else if($this->method == "POST" && trim($route[0]['route'], "/") == $parts[2] && $route[0]['request_type'] == "POST") {
+                $model = $route[0]['model'];
+                $method = $route[0]['method']; 
+                $this->handlePostRoute($model, $method, $parts[2]);
+            }
+            else if($this->method == "PUT" && trim($route[0]['route'], "/") == $parts[2] && $route[0]['request_type'] == "PUT") {
+                $id = $parts[3] ?? null;
+                $model = $route[0]['model'];
+                $method = $route[0]['method'];
+                $this->handlePutRoute($model, $method, $id);
+            }
         }
-        
     }
     
     private function handleGetRoute($model, $method, ? string $id) {
@@ -57,10 +52,12 @@ class Controller {
                 $this->view->outputJsonValidationsError($errors);
             }
             else {
-                $this->view->outputJson($model->$method((int)$id));
+                // echo json_encode($model->$method((int)$id));
+                // var_dump($model->$method((int)$id));
+                $this->view->outputJsonSingle($model->$method((int)$id));
             }
         } else {
-            $this->view->outputJson($model->$method());
+            $this->view->outputJsonCollection($model->$method());
         } 
     }
     private function handlePostRoute ($model, $method, $element){

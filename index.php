@@ -4,7 +4,7 @@ require "classes/models/product-model.php";
 require "classes/views/secondhand-api.php";
 require "controllers/controller.php";
 
-
+header("Content-Type: application/json");
 $request = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 $sellerModel = new SellerModel();
