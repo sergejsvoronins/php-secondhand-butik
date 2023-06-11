@@ -14,10 +14,10 @@ class SellerModel extends DB {
             );
             $seller->adId($element["id"]);
             $seller->addCreatingDate($element["creating_date"]);
-            $seller->addProductCount($this->getProductsCountByUser($element['id']));
-            $seller->addSoldProductCount($this->getSoldProductsCountByUser($element['id']));
-            $seller->addTotalSellingPrice($this->getSoldProductsTotalPriceByUser($element['id']));
-            $seller->addProducts($this->getAllProductListByUser($element['id']));
+            // $seller->addProductCount($this->getProductsCountByUser($element['id']));
+            // $seller->addSoldProductCount($this->getSoldProductsCountByUser($element['id']));
+            // $seller->addTotalSellingPrice($this->getSoldProductsTotalPriceByUser($element['id']));
+            // $seller->addProducts($this->getAllProductListByUser($element['id']));
             array_push($sellers, $seller);
         }
         return $sellers;
@@ -28,12 +28,27 @@ class SellerModel extends DB {
         $stmt->execute();
         return $this->convertToSellerClass($stmt->fetchAll()) ;   
     }
+    // public function getOneSeller (int $id) : array {
+    //     $query = "SELECT * FROM $this->table WHERE $this->table.id = ?";
+    //     $stmt = $this->pdo->prepare($query);
+    //     $stmt->execute([$id]);
+    //     return $this->convertToSellerClass($stmt->fetchAll());   
+    //     }
     public function getOneSeller (int $id) : array {
-        $query = "SELECT * FROM $this->table WHERE $this->table.id = ?";
+        $query = "SELECT s.id, s.first_name, s.last_name, s.epost, s.mobile, s.creating_date, COUNT(s.id) AS sold_products_count, SUM(p.price) AS total_sold_products_price FROM sellers AS s
+                    JOIN products AS p ON p.seller_id = s.id
+                    WHERE s.id = ? AND p.selling_date IS NOT NULL
+                    GROUP BY s.id;";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$id]);
-        return $this->convertToSellerClass($stmt->fetchAll()) ;   
-        }
+        $info = $stmt->fetchAll();
+        $seller = $this->convertToSellerClass($info);
+        $totalSoldProductsPrice = $info[0]["total_sold_products_price"];
+        $SoldProductsCount = $info[0]["sold_products_count"];
+        $productsCount  = $this->getProductsCountByUser($id);
+        $products = $this->getAllProductListByUser($id);
+        return [$seller,$totalSoldProductsPrice, $SoldProductsCount, $productsCount, $products]; 
+    }
     public function addSeller (Seller $seller) : string {
         $query = "INSERT INTO `sellers`(`first_name`, `last_name`, `epost`, `mobile`, `creating_date`) VALUES (?,?,?,?, CURRENT_DATE())";
         $stmt = $this->pdo->prepare($query);

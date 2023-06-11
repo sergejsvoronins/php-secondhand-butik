@@ -21,10 +21,15 @@ class SecondhandApi
         }
         else {
             $json = [
-                "info" => $data,
-                "products_count" => $data
+                "seller_info" => $data[0],
+                "total_sold_products_price" => $data[1],
+                "sold_products_count" => $data[2],
+                "products_count" => $data[3],
+                "products" => $data[4],
+
             ];
             echo json_encode($json);
+
         }
     }
     public function outputJsonValidationsError (array $errors) {

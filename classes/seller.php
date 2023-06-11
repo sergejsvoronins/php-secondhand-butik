@@ -7,10 +7,10 @@ class Seller {
     public string $mobile = "";
     public string $creating_date = "";
 
-    public  $productsCount = [];
-    public  $soldProductsCount = [];
-    public $totalSellingPrice = [];
-    public $products = [];
+    // public  $productsCount = 0;
+    // public  $soldProductsCount = 0;
+    // public $totalSellingPrice = 0;
+    // public $products = [];
 
 
     function __construct(
@@ -30,16 +30,16 @@ class Seller {
     public function addCreatingDate (string $date) {
         $this->creating_date = $date;
     }
-    public function addProductCount (int $count) {
-        $this->productsCount = $count;
-    }
-    public function addSoldProductCount (int $count) {
-        $this->soldProductsCount = $count;
-    }
-    public function addTotalSellingPrice (int $totalPrice) {
-        $this->totalSellingPrice = $totalPrice;
-    }
-    public function addProducts (array $products) {
-        $this->products = $products;
-    }
+    // public function addProductCount (int $count) {
+    //     $this->productsCount = $count;
+    // }
+    // public function addSoldProductCount (int $count) {
+    //     $this->soldProductsCount = $count;
+    // }
+    // public function addTotalSellingPrice (int $totalPrice) {
+    //     $this->totalSellingPrice = $totalPrice;
+    // }
+    // public function addProducts (array $products) {
+    //     $this->products = $products;
+    // }
 }
