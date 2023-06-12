@@ -12,11 +12,11 @@ $productModel = new ProductModel();
 $secondhandApi = new SecondhandApi();
 $controler = new Controller($secondhandApi, $method);
 $controler->addRoute("sellers", $sellerModel, "getAllSellers", "GET");
-$controler->addRoute("sellers/", $sellerModel, "getOneSeller", "GET");
+$controler->addRoute("sellers/id", $sellerModel, "getOneSeller", "GET");
 $controler->addRoute("sellers", $sellerModel, "addSeller", "POST");
 $controler->addRoute("products", $productModel, "getAllProducts", "GET");
-$controler->addRoute("products/", $productModel, "getOneProduct", "GET");
-$controler->addRoute("products/", $productModel, "addSellingDate", "PUT");
+$controler->addRoute("products/id", $productModel, "getOneProduct", "GET");
+$controler->addRoute("products/id", $productModel, "addSellingDate", "PUT");
 $controler->addRoute("products", $productModel, "addProduct", "POST");
 $controler->start($request);
 

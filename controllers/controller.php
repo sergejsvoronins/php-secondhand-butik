@@ -28,7 +28,7 @@ class Controller {
             case ("GET") :
                 if((count($parts) == 4 && $parts[3] !=null)|| count($parts) == 3) {
                     foreach ($this->routes as $route) {
-                        if($route[0]['request_type'] == "GET" && $route[0]["route"] == $parts[2] ."/" && count($parts) == 4) {
+                        if($route[0]['request_type'] == "GET" && $route[0]["route"] == $parts[2] ."/id" && count($parts) == 4) {
                             $id = $parts[3];
                             $model = $route[0]['model'];
                             $method = $route[0]['method'];
@@ -64,7 +64,7 @@ class Controller {
                 case ("PUT") :
                     if(count($parts) == 4 && $parts[3] !=null) {
                         foreach ($this->routes as $route) {
-                            if($route[0]['request_type'] == "PUT" && $route[0]["route"] == ($parts[2] . "/")) {
+                            if($route[0]['request_type'] == "PUT" && $route[0]["route"] == ($parts[2] . "/id")) {
                                 $id = $parts[3] ?? null;
                                 $model = $route[0]['model'];
                                 $method = $route[0]['method'];
