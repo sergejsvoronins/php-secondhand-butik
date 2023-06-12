@@ -28,13 +28,13 @@ class Controller {
             case ("GET") :
                 if((count($parts) == 4 && $parts[3] !=null)|| count($parts) == 3) {
                     foreach ($this->routes as $route) {
-                        if($route[0]['request_type'] == "GET" && $route[0]["route"] == $parts[2] ."/id" && count($parts) == 4) {
+                        if($route[0]['request_type'] == $this->method && $route[0]["route"] == $parts[2] ."/id" && count($parts) == 4) {
                             $id = $parts[3];
                             $model = $route[0]['model'];
                             $method = $route[0]['method'];
                             $this->handleGetRoute($model, $method, $id);
                         }
-                        else if($route[0]['request_type'] == "GET" && $route[0]["route"] == $parts[2] && count($parts) == 3) {
+                        else if($route[0]['request_type'] == $this->method && $route[0]["route"] == $parts[2] && count($parts) == 3) {
                             $model = $route[0]['model'];
                             $method = $route[0]['method'];
                             $this->handleGetRoute($model, $method, null);
@@ -49,7 +49,7 @@ class Controller {
                 case ("POST") :
                     if(count($parts) == 3) {
                         foreach ($this->routes as $route) {
-                            if($route[0]['request_type'] == "POST" && $route[0]["route"] == $parts[2]) {
+                            if($route[0]['request_type'] == $this->method && $route[0]["route"] == $parts[2]) {
                                 $model = $route[0]['model'];
                                 $method = $route[0]['method'];
                                 $this->handlePostRoute($model, $method, $parts[2]);
@@ -64,7 +64,7 @@ class Controller {
                 case ("PUT") :
                     if(count($parts) == 4 && $parts[3] !=null) {
                         foreach ($this->routes as $route) {
-                            if($route[0]['request_type'] == "PUT" && $route[0]["route"] == ($parts[2] . "/id")) {
+                            if($route[0]['request_type'] == $this->method && $route[0]["route"] == ($parts[2] . "/id")) {
                                 $id = $parts[3] ?? null;
                                 $model = $route[0]['model'];
                                 $method = $route[0]['method'];
@@ -80,7 +80,7 @@ class Controller {
             }
     }
     
-    private function handleGetRoute($model, $method, ? string $id) {
+    private function handleGetRoute($model, $method, ? string $id) : void {
         if ($id) {
             $errors = $this->getValidationErrors(["id" => $id]);
             if(! empty($errors)) {
@@ -100,7 +100,7 @@ class Controller {
             $this->view->outputJsonCollection($model->$method());
         } 
     }
-    private function handlePostRoute ($model, $method, $element){
+    private function handlePostRoute ($model, $method, $element) : void {
         $data = file_get_contents('php://input');
         $requestData = json_decode($data, true);
         $id = null;
@@ -153,7 +153,7 @@ class Controller {
         }
         
     }
-    private function handlePutRoute ($model, $method, ? string $id){
+    private function handlePutRoute ($model, $method, ? string $id) : void {
         if($id) {
             $errors = $this->getValidationErrors(["id" => $id]);
             if(! empty($errors)) {
