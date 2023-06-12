@@ -23,6 +23,12 @@ class ProductModel extends DB {
     public function getAllProducts () : array {
         return $this->convertToProductClass($this->getAll($this->table));
     }
+    public function getOneProduct (int $id)  {
+        $query = "SELECT * FROM $this->table WHERE products.id = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$id]);
+        return $this->convertToProductClass($stmt->fetchAll());
+    }
     public function addProduct (Product $product) : string {
         $query = "INSERT INTO `products`(`name`, `size_id`, `category_id`, `price`, `seller_id`, `creating_date`) 
                     VALUES (?,?,?,?,?,CURRENT_DATE());";
