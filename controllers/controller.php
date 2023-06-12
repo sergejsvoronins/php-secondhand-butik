@@ -24,9 +24,9 @@ class Controller {
 
     public function start($request):void {
         $parts = explode("/", $request);
-        if((count($parts) == 4 && $parts[3] !=null)|| count($parts) == 3) {
         switch ($this->method) {
             case ("GET") :
+                if((count($parts) == 4 && $parts[3] !=null)|| count($parts) == 3) {
                     foreach ($this->routes as $route) {
                         if($route[0]['request_type'] == "GET" && $route[0]["route"] == $parts[2] ."/" && count($parts) == 4) {
                             $id = $parts[3];
@@ -37,42 +37,47 @@ class Controller {
                         else if($route[0]['request_type'] == "GET" && $route[0]["route"] == $parts[2] && count($parts) == 3) {
                             $model = $route[0]['model'];
                             $method = $route[0]['method'];
-                            var_dump($method);
                             $this->handleGetRoute($model, $method, null);
                         }
                     }
-                    break; 
-            case ("POST") :
-                foreach ($this->routes as $route) {
-                    if($route[0]['request_type'] == "POST" && $route[0]["route"] == $parts[2] && count($parts) == 3) {
-                        $model = $route[0]['model'];
-                        $method = $route[0]['method'];
-                        $this->handlePostRoute($model, $method, $parts[2]);
+                }
+                else {
+                    header("HTTP/1.0 404 Not Found");
+                    echo "404 - Sidan kunde inte hittas";
+                }
+                break; 
+                case ("POST") :
+                    if(count($parts) == 3) {
+                        foreach ($this->routes as $route) {
+                            if($route[0]['request_type'] == "POST" && $route[0]["route"] == $parts[2]) {
+                                $model = $route[0]['model'];
+                                $method = $route[0]['method'];
+                                $this->handlePostRoute($model, $method, $parts[2]);
+                            }
+                        }
                     }
                     else {
                         header("HTTP/1.0 404 Not Found");
+                        echo "404 - Sidan kunde inte hittas";
                     }
-                }
                 break;
-            case ("PUT") :
-                foreach ($this->routes as $route) {
-                    if($route[0]['request_type'] == "PUT" && $route[0]["route"] == ($parts[2] . "/" && count($parts) == 4)) {
-                        $id = $parts[3] ?? null;
-                        $model = $route[0]['model'];
-                        $method = $route[0]['method'];
-                        $this->handlePutRoute($model, $method, $id);
+                case ("PUT") :
+                    if(count($parts) == 4 && $parts[3] !=null) {
+                        foreach ($this->routes as $route) {
+                            if($route[0]['request_type'] == "PUT" && $route[0]["route"] == ($parts[2] . "/")) {
+                                $id = $parts[3] ?? null;
+                                $model = $route[0]['model'];
+                                $method = $route[0]['method'];
+                                $this->handlePutRoute($model, $method, $id);
+                            }
+                        }
                     }
                     else {
                         header("HTTP/1.0 404 Not Found");
+                        echo "404 - Sidan kunde inte hittas";
                     }
-                    break;
-                }
+                break;
             }
-        }
-        else {
-            header("HTTP/1.0 404 Not Found");
-            echo "404 - Sidan kunde inte hittas";
-        }
     }
     
     private function handleGetRoute($model, $method, ? string $id) {
@@ -82,7 +87,14 @@ class Controller {
                 $this->view->outputJsonValidationsError($errors);
             }
             else {
-                $this->view->outputJsonSingle($model->$method((int)$id));
+                $response = $model->$method((int)$id);
+                if (count($response)!=0) {
+                    $this->view->outputJsonSingle($model->$method((int)$id)[0]);
+                }
+                else {
+                    echo "This product is not existing";
+                }
+
             }
         } else {
             $this->view->outputJsonCollection($model->$method());
@@ -111,8 +123,7 @@ class Controller {
                         $id = $model->$method($seller);
                     }
                     break;
-                    case ("products"):
-                        echo "hej";
+                case ("products"):
                     $requestData["name"] = filter_var($requestData["name"],FILTER_SANITIZE_SPECIAL_CHARS);
                     $requestData["size_id"] = filter_var($requestData["size_id"],FILTER_SANITIZE_NUMBER_INT);
                     $requestData["category_id"] = filter_var($requestData["category_id"],FILTER_SANITIZE_NUMBER_INT);
