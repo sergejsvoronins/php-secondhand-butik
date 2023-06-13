@@ -11,10 +11,6 @@ class Seller {
     private  $soldProductsCount = 0;
     private $totalSellingPrice = 0;
     private $productsList = [];
-    // public  $productsCount = 0;
-    // public  $soldProductsCount = 0;
-    // public $totalSellingPrice = 0;
-    // public $products = [];
 
 
     function __construct(
