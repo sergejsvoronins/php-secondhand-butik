@@ -3,8 +3,15 @@ Secondhand Butik
 # BESKRIVNING
 
 Det är ett REST API där routing byggt med url.
+## Att komma igång
+Först klonar man projektet från github till rätt mapp. Tex i fall man använder XAMPP då klonar man projektet till mappen xamp på sin dator. 
+Länk till projektet:  https://github.com/sergejsvoronins/php-secondhand-butik.git
+Sedan kan man skapa en databas i tex phpMyAdmin med hjälp av db.sql filen som går att importera. 
+
+För att testa alla endpoints användar man tex POSTMAN. 
 
 ## Endpoints:
+URL http://localhost/project/[endpoint]
 ### Hämta alla säljare och visa som en JSON objekt
         metod: "GET"
         endpoint: sellers
@@ -167,6 +174,5 @@ Först klonar man projektet från github till rätt mapp. Tex i fall man använd
 Länk till projektet:  https://github.com/sergejsvoronins/php-secondhand-butik.git
 Sedan kan man skapa en databas i tex phpMyAdmin med hjälp av db.sql filen som går att importera. 
 
-För att testa alla endpoints användar man tex POSTMAN. Då urlen ska se ut:
+För att testa alla endpoints användar man tex POSTMAN. 
 
-http://localhost/project/[endpoint]
