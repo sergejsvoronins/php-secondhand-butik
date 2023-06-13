@@ -50,8 +50,8 @@ class Controller {
         } 
         
     }
-    private function handleGetRoute($model, $method, ? string $id) : void {
-        if ($id) {
+    private function handleGetRoute($model, $method, $id) : void {
+        if ($id != null || $id =="") {
             $errors = $this->getValidationErrors(["id" => $id]);
             if(! empty($errors)) {
                 $this->view->outputJsonValidationsError($errors);
