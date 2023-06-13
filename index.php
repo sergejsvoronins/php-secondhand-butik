@@ -22,7 +22,5 @@ try {
     $controler->start($request);
 } catch (\Throwable $th) {
     http_response_code(503);
-    echo "Service Unavailable";
+    echo $th->getMessage();
 }
-
-// 
