@@ -28,6 +28,9 @@ class SellerModel extends DB {
         $stmt->execute();
         return $this->convertToSellerClass($stmt->fetchAll()) ;   
     }
+    // public function getAllSellers () : array {
+    //     return $this->convertToSellerClass($this->getAll($this->table));
+    // }
     public function getOneSeller (int $id) : array {
         $query = "SELECT s.id, s.first_name, s.last_name, s.epost, s.mobile, s.creating_date, COUNT(p.id) AS products_count,  
                     COUNT(CASE WHEN p.selling_date IS NOT NULL THEN p.id ELSE NULL END) AS sold_products_count,

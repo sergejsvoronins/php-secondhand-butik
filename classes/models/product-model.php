@@ -16,15 +16,28 @@ class ProductModel extends DB {
             $product->addId($element["id"]);
             $product->addCreatingDate($element["creating_date"]);
             $product->addSellingDate($element["selling_date"]);
+            $product->addSize($element["size"] ?? "");
+            $product->addCategory($element["category"] ?? "");
+            $product->addSeller($element["seller"] ?? "");
             array_push($products, $product);
         }
         return $products;
     }
+    // public function getAllProducts () : array {
+    //     return $this->convertToProductClass($this->getAll($this->table));
+    // }
     public function getAllProducts () : array {
-        return $this->convertToProductClass($this->getAll($this->table));
+        $query = "SELECT * FROM $this->table";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute();
+        return $this->convertToProductClass($stmt->fetchAll()) ;   
     }
     public function getOneProduct (int $id)  {
-        $query = "SELECT * FROM $this->table WHERE products.id = ?";
+        $query = "SELECT p.*, sizes.name AS size, c.name AS category, CONCAT(s.first_name, ' ', s.last_name) AS seller FROM products AS p
+        JOIN sizes ON p.size_id = sizes.id
+        JOIN categories AS c ON p.category_id=c.id
+        JOIN sellers AS s ON p.seller_id = s.id 
+        WHERE p.id = ?";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$id]);
         return $this->convertToProductClass($stmt->fetchAll());

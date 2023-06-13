@@ -35,10 +35,11 @@ class SecondhandApi
                 $json = [
                     "id" => $data->id,
                     "name" => $data->name,
-                    "size_id" => $data->size_id,
-                    "category_id" => $data->category_id,
+                    "size" => $data->getSize(),
+                    "category" => $data->getCategory(),
                     "price" => $data->price,
-                    "seller_id" => $data->seller_id,
+                    "selle_ID" => $data->getSellerId(),
+                    "seller_name" => $data->getSeller(),
                     "creating_date" => $data->creating_date,
                     "selling_date" => $data->selling_date,
                 ];

@@ -7,7 +7,7 @@ require "controllers/controller.php";
 header("Content-Type: application/json");
 $request = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
-try {
+// try {
     $sellerModel = new SellerModel();
     $productModel = new ProductModel();
     $secondhandApi = new SecondhandApi();
@@ -20,7 +20,7 @@ try {
     $controler->addRoute("products/", $productModel, "addSellingDate", "PUT");
     $controler->addRoute("products", $productModel, "addProduct", "POST");
     $controler->start($request);
-} catch (\Throwable $th) {
-    http_response_code(503);
-    echo $th->getMessage();
-}
+// } catch (\Throwable $th) {
+//     http_response_code(503);
+//     echo $th->getMessage();
+// }
