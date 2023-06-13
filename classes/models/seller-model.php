@@ -13,8 +13,8 @@ class SellerModel extends DB {
                 $element["mobile"],
             );
             $seller->adId($element["id"]);
-            $seller->addCreatingDate($element["creating_date"]);
-            $seller->addProductCount($this->getProductsCountByUser($element['id']));
+            $seller->addCreatingDate($element["creating_date"] ?? 0);
+            $seller->addProductCount($element["products_count"] ?? 0);
             $seller->addSoldProductCount($element["sold_products_count"] ?? 0);
             $seller->addTotalSellingPrice($element["total_sold_products_price"] ?? 0);
             $seller->addProducts($this->getAllProductListByUser($element['id']));
@@ -23,87 +23,28 @@ class SellerModel extends DB {
         return $sellers;
     }
     public function getAllSellers () : array {
-        $query = "SELECT s.id, s.first_name, s.last_name, s.epost, s.mobile, s.creating_date, COUNT(s.id) AS sold_products_count, SUM(p.price) AS total_sold_products_price FROM sellers AS s
-                    JOIN products AS p ON p.seller_id = s.id
-                    WHERE p.selling_date IS NOT NULL
-                    GROUP BY s.id;";
+        $query = "SELECT * FROM $this->table";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
         return $this->convertToSellerClass($stmt->fetchAll()) ;   
     }
     public function getOneSeller (int $id) : array {
-        $query = "SELECT s.id, s.first_name, s.last_name, s.epost, s.mobile, s.creating_date, COUNT(s.id) AS sold_products_count, SUM(p.price) AS total_sold_products_price FROM sellers AS s
-                    JOIN products AS p ON p.seller_id = s.id
-                    WHERE s.id = ? AND p.selling_date IS NOT NULL
+        $query = "SELECT s.id, s.first_name, s.last_name, s.epost, s.mobile, s.creating_date, COUNT(p.id) AS products_count,  
+                    COUNT(CASE WHEN p.selling_date IS NOT NULL THEN p.id ELSE NULL END) AS sold_products_count,
+                    SUM(CASE WHEN p.selling_date IS NOT NULL THEN p.price ELSE 0 END) AS total_sold_products_price
+                    FROM sellers AS s
+                    LEFT JOIN products AS p ON p.seller_id = s.id
+                    WHERE s.id = ?
                     GROUP BY s.id;";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$id]);
         return $this->convertToSellerClass($stmt->fetchAll());
-        // $totalSoldProductsPrice = $info[0]["total_sold_products_price"];
-        // $SoldProductsCount = $info[0]["sold_products_count"];
-        // $productsCount  = $this->getProductsCountByUser($id);
-        // $products = $this->getAllProductListByUser($id);
-        // return [$seller,$totalSoldProductsPrice, $SoldProductsCount, $productsCount, $products]; 
     }
-    // public function getOneSeller (int $id) : array {
-    //     $query = "SELECT s.id, s.first_name, s.last_name, s.epost, s.mobile, s.creating_date, COUNT(s.id) AS sold_products_count, SUM(p.price) AS total_sold_products_price FROM sellers AS s
-    //                 JOIN products AS p ON p.seller_id = s.id
-    //                 WHERE s.id = ? AND p.selling_date IS NOT NULL
-    //                 GROUP BY s.id;";
-    //     $stmt = $this->pdo->prepare($query);
-    //     $stmt->execute([$id]);
-    //     $info = $stmt->fetchAll();
-    //     $seller = $this->convertToSellerClass($info);
-    //     $totalSoldProductsPrice = $info[0]["total_sold_products_price"];
-    //     $SoldProductsCount = $info[0]["sold_products_count"];
-    //     $productsCount  = $this->getProductsCountByUser($id);
-    //     $products = $this->getAllProductListByUser($id);
-    //     return [$seller,$totalSoldProductsPrice, $SoldProductsCount, $productsCount, $products]; 
-    // }
     public function addSeller (Seller $seller) : string {
         $query = "INSERT INTO `sellers`(`first_name`, `last_name`, `epost`, `mobile`, `creating_date`) VALUES (?,?,?,?, CURRENT_DATE())";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$seller->first_name, $seller->last_name, $seller->epost, $seller->mobile]);
         return $this->pdo->lastInsertId();  
-    }
-    public function getProductsCountByUser (int $userId) : int {
-        $query = "SELECT COUNT(s.id) AS products_count FROM sellers AS s
-                    JOIN products AS p ON p.seller_id = s.id
-                    WHERE s.id = ?
-                    GROUP BY s.id;";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$userId]); 
-        $array = $stmt->fetchAll();
-        if (count($array)== 0) return 0;
-        else {
-            return $array[0]['products_count'];
-        }
-    }
-    public function getSoldProductsCountByUser (int $userId) : int {
-        $query = "SELECT COUNT(s.id) AS sold_products_count FROM sellers AS s
-                    JOIN products AS p ON p.seller_id = s.id
-                    WHERE s.id = ? AND p.selling_date IS NOT NULL
-                    GROUP BY s.id;";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$userId]); 
-        $array = $stmt->fetchAll();
-        if (count($array)== 0) return 0;
-        else {
-            return $array[0]['sold_products_count'];
-        }
-    }
-    public function getSoldProductsTotalPriceByUser (int $userId) : int {
-        $query = "SELECT SUM(products.price) AS total_price FROM sellers
-                    JOIN products ON sellers.id = products.seller_id
-                    WHERE sellers.id = ? AND products.selling_date IS NOT NULL
-                    GROUP BY sellers.id;";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$userId]); 
-        $array = $stmt->fetchAll();
-        if (count($array)== 0) return 0;
-        else {
-            return (int) $array[0]['total_price'];
-        }
     }
     public function getAllProductListByUser (int $userId) : array {
         $query = "SELECT products.id, products.name, sizes.name AS size, categories.name AS category, products.price, products.creating_date, products.selling_date FROM sellers

@@ -49,10 +49,7 @@ class SecondhandApi
                     "message" => "Bad Request"
                 ];
             }
-
             echo json_encode($json);
-
-        // }
     }
     public function outputJsonValidationsError (array $errors) {
         http_response_code(422);

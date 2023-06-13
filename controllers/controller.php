@@ -9,77 +9,47 @@ class Controller {
         $this->view = $view;
         $this->method = $method;
     }
-
-    public function addRoute($route, $model, $method, $requestType) {
-        $data = [
-            [
-                'route' => $route,
-                'model' => $model,
-                'method' => $method,
-                'request_type' => $requestType
-            ]
-        ];
-        array_push($this->routes, $data);
+    public function addRoute($route, $model, $method, $requestType)
+    {
+        $this->routes[$requestType][$route] = ['model' => $model, 'method' => $method];
     }
 
-    public function start($request):void {
+    public function start($request): void
+    {
         $parts = explode("/", $request);
-        switch ($this->method) {
-            case ("GET") :
-                if((count($parts) == 4 && $parts[3] !=null)|| count($parts) == 3) {
-                    foreach ($this->routes as $route) {
-                        if($route[0]['request_type'] == $this->method && $route[0]["route"] == $parts[2] ."/id" && count($parts) == 4) {
-                            $id = $parts[3];
-                            $model = $route[0]['model'];
-                            $method = $route[0]['method'];
-                            $this->handleGetRoute($model, $method, $id);
-                        }
-                        else if($route[0]['request_type'] == $this->method && $route[0]["route"] == $parts[2] && count($parts) == 3) {
-                            $model = $route[0]['model'];
-                            $method = $route[0]['method'];
-                            $this->handleGetRoute($model, $method, null);
-                        }
-                    }
-                }
-                else {
-                    header("HTTP/1.0 404 Not Found");
-                    echo "404 - Sidan kunde inte hittas";
-                }
-                break; 
-                case ("POST") :
-                    if(count($parts) == 3) {
-                        foreach ($this->routes as $route) {
-                            if($route[0]['request_type'] == $this->method && $route[0]["route"] == $parts[2]) {
-                                $model = $route[0]['model'];
-                                $method = $route[0]['method'];
-                                $this->handlePostRoute($model, $method, $parts[2]);
-                            }
-                        }
-                    }
-                    else {
-                        header("HTTP/1.0 404 Not Found");
-                        echo "404 - Sidan kunde inte hittas";
-                    }
-                break;
-                case ("PUT") :
-                    if(count($parts) == 4 && $parts[3] !=null) {
-                        foreach ($this->routes as $route) {
-                            if($route[0]['request_type'] == $this->method && $route[0]["route"] == ($parts[2] . "/id")) {
-                                $id = $parts[3] ?? null;
-                                $model = $route[0]['model'];
-                                $method = $route[0]['method'];
-                                $this->handlePutRoute($model, $method, $id);
-                            }
-                        }
-                    }
-                    else {
-                        header("HTTP/1.0 404 Not Found");
-                        echo "404 - Sidan kunde inte hittas";
-                    }
-                break;
+        $matchedRoute = null;
+            if(count($parts) == 3 && isset($this->routes[$this->method][$parts[2]])){
+                $matchedRoute = $this->routes[$this->method][$parts[2]];
             }
+            else if(count($parts) == 4 && isset($this->routes[$this->method][$parts[2]])){
+                $matchedRoute = $this->routes[$this->method][$parts[2] . "/"];
+            }
+            else {
+                http_response_code(404);
+                echo "Page is not found";
+            }
+        if ($matchedRoute) {
+            $id = $parts[3] ?? null;
+            $model = $matchedRoute['model'];
+            $method = $matchedRoute['method'];
+
+            switch ($this->method) {
+                case 'GET':
+                    $this->handleGetRoute($model, $method, $id);
+                    break;
+                case 'POST':
+                    $this->handlePostRoute($model, $method, $parts[2]);
+                    break;
+                case 'PUT':
+                    $this->handlePutRoute($model, $method, $id);
+                    break;
+                default:
+                    http_response_code(405);
+                    break;
+            }
+        } 
+        
     }
-    
     private function handleGetRoute($model, $method, ? string $id) : void {
         if ($id) {
             $errors = $this->getValidationErrors(["id" => $id]);
@@ -94,7 +64,7 @@ class Controller {
                 else {
                     echo "This product is not existing";
                 }
-
+                
             }
         } else {
             $this->view->outputJsonCollection($model->$method());
