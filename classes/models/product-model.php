@@ -23,14 +23,8 @@ class ProductModel extends DB {
         }
         return $products;
     }
-    // public function getAllProducts () : array {
-    //     return $this->convertToProductClass($this->getAll($this->table));
-    // }
     public function getAllProducts () : array {
-        $query = "SELECT * FROM $this->table";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute();
-        return $this->convertToProductClass($stmt->fetchAll()) ;   
+        return $this->convertToProductClass($this->getAll($this->table));
     }
     public function getOneProduct (int $id)  {
         $query = "SELECT p.*, sizes.name AS size, c.name AS category, CONCAT(s.first_name, ' ', s.last_name) AS seller FROM products AS p
