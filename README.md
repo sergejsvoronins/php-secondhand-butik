@@ -168,11 +168,4 @@ Databasen som APIet pratar med består av 4 tabeller
     description: varchar(32)
     creating_date: date
 
-# INSTRUKTIONER
-
-Först klonar man projektet från github till rätt mapp. Tex i fall man använder XAMPP då klonar man projektet till mappen xamp på sin dator. 
-Länk till projektet:  https://github.com/sergejsvoronins/php-secondhand-butik.git
-Sedan kan man skapa en databas i tex phpMyAdmin med hjälp av db.sql filen som går att importera. 
-
-För att testa alla endpoints användar man tex POSTMAN. 
 
