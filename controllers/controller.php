@@ -51,7 +51,7 @@ class Controller {
         
     }
     private function handleGetRoute($model, $method, $id) : void {
-        if ($id != null || $id =="") {
+        if ($id || $id === "") {
             $errors = $this->getValidationErrors(["id" => $id]);
             if(! empty($errors)) {
                 $this->view->outputJsonValidationsError($errors);
@@ -62,7 +62,8 @@ class Controller {
                     $this->view->outputJsonSingle($model->$method((int)$id)[0]);
                 }
                 else {
-                    echo "This product is not existing";
+                    http_response_code(404);
+                    echo "Not Found";
                 }
                 
             }
