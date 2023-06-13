@@ -44,7 +44,7 @@ class SellerModel extends DB {
         return $this->convertToSellerClass($stmt->fetchAll());
     }
     public function addSeller (Seller $seller) : string {
-        $query = "INSERT INTO `sellers`(`first_name`, `last_name`, `epost`, `mobile`, `creating_date`) VALUES (?,?,?,?, CURRENT_DATE())";
+        $query = "INSERT INTO `sellers`(`first_name`, `last_name`, `epost`, `mobile`) VALUES (?,?,?,?)";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$seller->first_name, $seller->last_name, $seller->epost, $seller->mobile]);
         return $this->pdo->lastInsertId();  

@@ -27,31 +27,31 @@ class Seller {
     public function adId(int $id) {
         $this->id = $id;
     }
-    public function addCreatingDate (string $date) {
+    public function addCreatingDate (string $date) : void {
         $this->creating_date = $date;
     }
-    public function addProductCount (int $count) {
+    public function addProductCount (int $count) : void {
         $this->productsCount = $count;
     }
-    public function addSoldProductCount (int $count) {
+    public function addSoldProductCount (int $count) : void {
         $this->soldProductsCount = $count;
     }
-    public function addTotalSellingPrice (int $totalPrice) {
+    public function addTotalSellingPrice (int $totalPrice) :void {
         $this->totalSellingPrice = $totalPrice;
     }
-    public function addProducts (array $productsList) {
+    public function addProducts (array $productsList) : void {
         $this->productsList = $productsList;
     }
-    public function getProductsCount () {
+    public function getProductsCount () : int {
         return $this->productsCount;
     }
-    public function getSoldProductsCount () {
+    public function getSoldProductsCount () : int {
         return $this->soldProductsCount;
     }
-    public function getTotalSellingPrice () {
+    public function getTotalSellingPrice () : int {
         return $this->totalSellingPrice;
     }
-    public function getProductsList () {
+    public function getProductsList () : array {
         return $this->productsList;
     }
 }

@@ -37,14 +37,14 @@ class ProductModel extends DB {
         return $this->convertToProductClass($stmt->fetchAll());
     }
     public function addProduct (Product $product) : string {
-        $query = "INSERT INTO `products`(`name`, `size_id`, `category_id`, `price`, `seller_id`, `creating_date`) 
-                    VALUES (?,?,?,?,?,CURRENT_DATE());";
+        $query = "INSERT INTO `products`(`name`, `size_id`, `category_id`, `price`, `seller_id`) 
+                    VALUES (?,?,?,?,?);";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$product->name, $product->size_id, $product->category_id, $product->price, $product->seller_id]);
+        $stmt->execute([$product->name, $product->getSizeId(), $product->getCategoryId(), $product->price, $product->getSellerId()]);
         return $this->pdo->lastInsertId();
     }
-    public function addSellingDate (int $productId) {
-        $query ="UPDATE products  SET selling_date= IF(selling_date IS NULL, CURRENT_DATE(), selling_date)
+    public function addSellingDate (int $productId) : int {
+        $query ="UPDATE products  SET selling_date= IF(selling_date IS NULL, CURRENT_TIMESTAMP(), selling_date)
         WHERE id = ?;";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$productId]);  

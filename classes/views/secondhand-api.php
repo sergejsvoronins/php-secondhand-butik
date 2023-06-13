@@ -3,7 +3,7 @@
 
 class SecondhandApi
 {
-    public function outputJsonCollection(array $data) {
+    public function outputJsonCollection(array $data) : void {
         if(count($data)==0){
             http_response_code(400);
         }
@@ -16,12 +16,12 @@ class SecondhandApi
         }
     }
 
-    public function outputJsonSingle(Object $data) {
+    public function outputJsonSingle(Object $data) : void {
             if($data instanceof Seller) {
                 $json = [
                     "id" => $data->id,
-                    "first_name" => $data->first_name,
                     "last_name" => $data->last_name,
+                    "first_name" => $data->first_name,
                     "epost" => $data->epost,
                     "mobile" => $data->mobile,
                     "creating_date" => $data->creating_date,
@@ -38,7 +38,7 @@ class SecondhandApi
                     "size" => $data->getSize(),
                     "category" => $data->getCategory(),
                     "price" => $data->price,
-                    "selle_ID" => $data->getSellerId(),
+                    "seller_ID" => $data->getSellerId(),
                     "seller_name" => $data->getSeller(),
                     "creating_date" => $data->creating_date,
                     "selling_date" => $data->selling_date,
@@ -52,7 +52,7 @@ class SecondhandApi
             }
             echo json_encode($json);
     }
-    public function outputJsonValidationsError (array $errors) {
+    public function outputJsonValidationsError (array $errors) : void {
         http_response_code(422);
         echo json_encode(['errors' => $errors]);
     }
