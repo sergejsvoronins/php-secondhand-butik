@@ -1,6 +1,5 @@
-Secondhand Butik
+# Secondhand Butik
 
-# BESKRIVNING
 
 Det är ett REST API där routing byggt med url.
 ## Att komma igång
