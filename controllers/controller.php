@@ -18,13 +18,13 @@ class Controller {
     {
         $parts = explode("/", $request);
         $matchedRoute = null;
-            if(count($parts) == 3 && isset($this->routes[$this->method][$parts[2]])){
-                $matchedRoute = $this->routes[$this->method][$parts[2]];
-            }
-            else if(count($parts) == 4 && isset($this->routes[$this->method][$parts[2]])){
-                $matchedRoute = $this->routes[$this->method][$parts[2] . "/"];
-            }
-            else {
+        if(count($parts) == 3 && isset($this->routes[$this->method][$parts[2]])){
+            $matchedRoute = $this->routes[$this->method][$parts[2]];
+        }
+        else if(count($parts) == 4 && isset($this->routes[$this->method][$parts[2] . "/"])){
+            $matchedRoute = $this->routes[$this->method][$parts[2] . "/"];
+        }
+        else {
                 http_response_code(404);
                 echo "Page is not found";
             }
@@ -134,12 +134,12 @@ class Controller {
             $isSold = $model->$method((int)$id);
                 if($isSold!=0){
                 echo json_encode([
-                    "message" => "Product  med ID = $id has been updated"
+                    "message" => "Product  with ID = $id has been updated"
                 ]);
                 }
                 else {
                 echo json_encode([
-                    "message" => "Product  med ID = $id is already sold"
+                    "message" => "Product  with ID = $id is already sold"
                 ]);
                 
                 }
