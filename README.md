@@ -10,7 +10,9 @@ Sedan kan man skapa en databas i tex phpMyAdmin med hjälp av db.sql filen som g
 För att testa alla endpoints användar man tex POSTMAN. 
 
 ## Endpoints:
+
 URL http://localhost/project/[endpoint]
+
 ### Hämta alla säljare och visa som en JSON objekt
         metod: "GET"
         endpoint: sellers
