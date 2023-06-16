@@ -11,7 +11,7 @@ class Product {
 
     private string $size = "";
     private string $category = "";
-    private string $seller = "";
+    private string $sellerName = "";
 
     function __construct($name, $size_id, $category_id, $price, $seller_id) {
         $this->name = $name;
@@ -29,14 +29,14 @@ class Product {
     public function addSellingDate (string | null $date) : void {
         $this->selling_date = $date;
     }
-    public function addSize (? string  $size) : void {
+    public function addSize (string  $size) : void {
         $this->size = $size;
     }
-    public function addCategory ( ? string $category) : void {
+    public function addCategory (string $category) : void {
         $this->category = $category;
     }
-    public function addSeller ( ? string $seller) : void {
-        $this->seller = $seller;
+    public function addSellerName (string $sellerName) : void {
+        $this->sellerName = $sellerName;
     }
     public function addSellerId ( int $sellerId) : void {
         $this->seller_id = $sellerId;
@@ -53,8 +53,8 @@ class Product {
     public function getCategory () :string {
         return $this->category;
     }
-    public function getSeller () :string {
-        return $this->seller;
+    public function getSellerName () :string {
+        return $this->sellerName;
     }
     public function getSellerId () : int {
         return $this->seller_id;

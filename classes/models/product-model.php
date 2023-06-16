@@ -18,7 +18,7 @@ class ProductModel extends DB {
             $product->addSellingDate($element["selling_date"]);
             $product->addSize($element["size"] ?? "");
             $product->addCategory($element["category"] ?? "");
-            $product->addSeller($element["seller"] ?? "");
+            $product->addSellerName($element["seller"] ?? "");
             array_push($products, $product);
         }
         return $products;

@@ -39,7 +39,7 @@ class SecondhandApi
                     "category" => $data->getCategory(),
                     "price" => $data->price,
                     "seller_ID" => $data->getSellerId(),
-                    "seller_name" => $data->getSeller(),
+                    "seller_name" => $data->getSellerName(),
                     "creating_date" => $data->creating_date,
                     "selling_date" => $data->selling_date,
                 ];

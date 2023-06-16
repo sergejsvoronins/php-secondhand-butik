@@ -22,12 +22,7 @@ class SellerModel extends DB {
         }
         return $sellers;
     }
-    // public function getAllSellers () : array {
-    //     $query = "SELECT * FROM $this->table";
-    //     $stmt = $this->pdo->prepare($query);
-    //     $stmt->execute();
-    //     return $this->convertToSellerClass($stmt->fetchAll()) ;   
-    // }
+
     public function getAllSellers () : array {
         return $this->convertToSellerClass($this->getAll($this->table));
     }

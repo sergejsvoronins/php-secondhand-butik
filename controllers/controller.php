@@ -9,7 +9,7 @@ class Controller {
         $this->view = $view;
         $this->method = $method;
     }
-    public function addRoute($route, $model, $method, $requestType)
+    public function addRoute(string $route, Object $model, string $method, string $requestType) : void
     {
         $this->routes[$requestType][$route] = ['model' => $model, 'method' => $method];
     }
@@ -133,14 +133,16 @@ class Controller {
             else {
             $isSold = $model->$method((int)$id);
                 if($isSold!=0){
-                echo json_encode([
-                    "message" => "Product  with ID = $id has been updated"
-                ]);
+                    http_response_code(200);
+                    echo json_encode([
+                        "message" => "Product  with ID = $id has been updated"
+                    ]);
                 }
                 else {
-                echo json_encode([
-                    "message" => "Product  with ID = $id is already sold"
-                ]);
+                    http_response_code(422);
+                    echo json_encode([
+                        "message" => "Product  with ID = $id is already sold"
+                    ]);
                 
                 }
             }
@@ -163,27 +165,27 @@ class Controller {
             }
             if(array_key_exists("epost", $data)) {
                 if(filter_var($data["epost"],FILTER_VALIDATE_EMAIL)=== false) {
-                    $errors [] = "Epost must be type of epost";
+                    $errors [] = "Epost must be of type epost";
                 }
             }
             if(array_key_exists("size_id", $data)) {
                 if(filter_var($data["size_id"],FILTER_VALIDATE_INT)=== false) {
-                    $errors [] = "Size must be type of integer";
+                    $errors [] = "Size must be of type integer";
                 }
             }
             if(array_key_exists("category_id", $data)) {
                 if(filter_var($data["category_id"],FILTER_VALIDATE_INT)=== false) {
-                    $errors [] = "Category must be type of integer";
+                    $errors [] = "Category must be of type integer";
                 }
             }
             if(array_key_exists("price", $data)) {
                 if(filter_var($data["price"],FILTER_VALIDATE_INT)=== false) {
-                    $errors [] = "Price must be type of integer";
+                    $errors [] = "Price must be of type integer";
                 }
             }
             if(array_key_exists("seller_id", $data)) {
                 if(filter_var($data["seller_id"],FILTER_VALIDATE_INT)=== false) {
-                    $errors [] = "Price must be type of integer";
+                    $errors [] = "Price must be of type integer";
                 }
             }
             return $errors;
