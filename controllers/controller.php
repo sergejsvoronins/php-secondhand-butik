@@ -77,10 +77,10 @@ class Controller {
         $id = null;
         switch($element) {
                 case ("sellers"):
-                    $requestData["first_name"] = filter_var($requestData["first_name"],FILTER_SANITIZE_SPECIAL_CHARS);
-                    $requestData["last_name"] = filter_var($requestData["last_name"],FILTER_SANITIZE_SPECIAL_CHARS);
-                    $requestData["epost"] = filter_var($requestData["epost"],FILTER_SANITIZE_EMAIL);
-                    $requestData["mobile"] = filter_var($requestData["mobile"],FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["first_name"] = filter_var($requestData["first_name"] ?? null,FILTER_SANITIZE_SPECIAL_CHARS);
+                    $requestData["last_name"] = filter_var($requestData["last_name"] ?? null,FILTER_SANITIZE_SPECIAL_CHARS);
+                    $requestData["epost"] = filter_var($requestData["epost"] ?? null,FILTER_SANITIZE_EMAIL);
+                    $requestData["mobile"] = filter_var($requestData["mobile"] ?? null,FILTER_SANITIZE_NUMBER_INT);
                     $errors = $this->getValidationErrors($requestData);
                     if(! empty($errors)){
                         $this->view->outputJsonValidationsError($errors);
@@ -95,11 +95,11 @@ class Controller {
                     }
                     break;
                 case ("products"):
-                    $requestData["name"] = filter_var($requestData["name"],FILTER_SANITIZE_SPECIAL_CHARS);
-                    $requestData["size_id"] = filter_var($requestData["size_id"],FILTER_SANITIZE_NUMBER_INT);
-                    $requestData["category_id"] = filter_var($requestData["category_id"],FILTER_SANITIZE_NUMBER_INT);
-                    $requestData["price"] = filter_var($requestData["price"],FILTER_SANITIZE_NUMBER_INT);
-                    $requestData["seller_id"] = filter_var($requestData["seller_id"],FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["name"] = filter_var($requestData["name"] ?? null,FILTER_SANITIZE_SPECIAL_CHARS);
+                    $requestData["size_id"] = filter_var($requestData["size_id"] ?? null,FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["category_id"] = filter_var($requestData["category_id"] ?? null,FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["price"] = filter_var($requestData["price"] ?? null,FILTER_SANITIZE_NUMBER_INT);
+                    $requestData["seller_id"] = filter_var($requestData["seller_id"] ?? null,FILTER_SANITIZE_NUMBER_INT);
                     $errors = $this->getValidationErrors($requestData);
                     if(! empty($errors)){
                         $this->view->outputJsonValidationsError($errors);
